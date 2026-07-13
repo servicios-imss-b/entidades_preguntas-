@@ -376,6 +376,6 @@ else:
     salida_js.write_text(js_content, encoding="utf-8")
     print(f"Reporte generado: {salida_html}")
     print(f"Datos generados: {salida_js}")
-    webbrowser.open(salida_html.as_uri())
+  
 
     resumen_entidad.head(10)
