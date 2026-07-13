@@ -173,6 +173,11 @@ else:
             """
         )
 
+    payload_js = {
+        "fecha_reporte": fecha_reporte,
+        "datos_entidades": datos_entidades,
+    }
+
     html_content = f"""<!DOCTYPE html>
 <html lang='es'>
 <head>
@@ -255,14 +260,14 @@ else:
         <header class='header'>
             <img src='https://imssbienestar.gob.mx/assets/img/imb_b.svg' alt='IMSS Bienestar'>
             <h1>INFORME DE CLUES PENDIENTES POR ENTIDAD</h1>
-            <p>Regla aplicada: porcentaje menor a 100%</p>
+            <p>Actualizado: {fecha_reporte}</p>
         </header>
 
         <section class='estados-grid'>
             {''.join(botones_entidad)}
         </section>
 
-        <p class='footer'>Fuente: tabla_unidades del notebook actual.</p>
+        <p class='footer'>.</p>
     </div>
 
     <div class='modal' id='detalleModal'>
@@ -295,8 +300,9 @@ else:
         </div>
     </div>
 
+    <script src='data.js'></script>
     <script>
-        const datosEntidades = {json.dumps(datos_entidades, ensure_ascii=False)};
+        const datosEntidades = (window.INFORME_DATA && window.INFORME_DATA.datos_entidades) || {{}};
         let rowsActuales = [];
 
         function toggleMenu() {{
@@ -362,9 +368,15 @@ else:
 </body>
 </html>"""
 
-    salida_html = Path.cwd() / "informe_clues_pendientes_por_entidad.html"
+    js_content = "window.INFORME_DATA = " + json.dumps(payload_js, ensure_ascii=False) + ";\n"
+
+    salida_dir = Path(__file__).resolve().parent
+    salida_html = salida_dir / "index.html"
+    salida_js = salida_dir / "data.js"
     salida_html.write_text(html_content, encoding="utf-8")
+    salida_js.write_text(js_content, encoding="utf-8")
     print(f"Reporte generado: {salida_html}")
+    print(f"Datos generados: {salida_js}")
     webbrowser.open(salida_html.as_uri())
 
     resumen_entidad.head(10)
