@@ -115,7 +115,6 @@ tabla_unidades = (
     .reset_index(drop=True)
 )
 import json
-import webbrowser
 from pathlib import Path
 from datetime import datetime
 
