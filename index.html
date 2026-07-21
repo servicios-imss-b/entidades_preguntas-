@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang='es'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Informe de CLUES Pendientes - IMSS Bienestar</title>
+    <link href='https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&display=swap' rel='stylesheet'>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'League Spartan', sans-serif; }
+        body { background: linear-gradient(135deg, #FAF2F5 0%, #fff 100%); min-height: 100vh; color: #000000; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        .menu-container { position: fixed; top: 20px; right: 20px; z-index: 1001; }
+        .menu-btn { background: #235B4E; border: none; border-radius: 50%; width: 50px; height: 50px; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px; box-shadow: 0 2px 10px rgba(0,0,0,.2); transition: .3s; }
+        .menu-btn:hover { background: #AE8640; transform: scale(1.05); }
+        .menu-btn span { width: 25px; height: 3px; background: #fff; border-radius: 3px; }
+
+        .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 1001; display: none; }
+        .menu-overlay.active { display: block; }
+
+        .menu-panel { position: fixed; top: 0; right: -420px; width: 390px; height: 100%; background: #fff; box-shadow: -2px 0 10px rgba(0,0,0,.1); z-index: 1002; transition: .3s; overflow-y: auto; padding: 80px 24px 24px; }
+        .menu-panel.active { right: 0; }
+        .close-menu { position: absolute; top: 18px; right: 18px; background: none; border: none; font-size: 30px; color: #235B4E; cursor: pointer; }
+        .menu-panel h2 { color: #235B4E; margin-bottom: 14px; border-bottom: 3px solid #AE8640; padding-bottom: 8px; }
+        .menu-panel h3 { color: #AE8640; margin: 14px 0 8px; }
+        .menu-panel p, .menu-panel li { color: #444; line-height: 1.5; }
+        .menu-panel ul { margin-left: 20px; }
+
+        .header { background: #235B4E; color: #fff; border-radius: 15px; text-align: center; padding: 20px; margin-bottom: 20px; }
+        .header img { height: 50px; margin-bottom: 10px; }
+        .header h1 { font-size: 28px; margin-bottom: 6px; }
+
+        .estados-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
+        .estado-btn { background: #235B4E; color: #fff; border: none; border-radius: 12px; padding: 14px 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: .3s; }
+        .estado-btn:hover { background: #AE8640; transform: translateY(-2px); }
+
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 2000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { width: 96%; max-width: 1320px; max-height: 90vh; overflow: auto; background: #fff; border-radius: 16px; padding: 20px; position: relative; }
+        .close-btn { position: absolute; top: 10px; right: 14px; border: none; background: none; font-size: 30px; cursor: pointer; color: #333; }
+        .modal h2 { color: #235B4E; margin-bottom: 8px; }
+        .modal .sub { margin-bottom: 12px; color: #444; }
+
+        .sort-actions { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+        .sort-btn { background: #AE8640; color: #fff; border: none; border-radius: 8px; padding: 8px 12px; cursor: pointer; font-weight: 600; }
+        .sort-btn:hover { filter: brightness(0.95); }
+
+        .table-wrap { max-height: 65vh; overflow: auto; border: 1px solid #ececec; border-radius: 10px; }
+        table { width: 100%; border-collapse: collapse; min-width: 980px; }
+        th, td { border: 1px solid #eaeaea; padding: 10px 12px; text-align: left; }
+        th { background: #235B4E; color: #fff; position: sticky; top: 0; z-index: 1; }
+        tbody tr:nth-child(even) { background: #fafafa; }
+        tbody tr:hover { background: #fff3e0; }
+
+        .footer { margin-top: 18px; color: #666; font-size: 14px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class='menu-container'>
+        <button class='menu-btn' onclick='toggleMenu()'>
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+    <div class='menu-overlay' id='menuOverlay' onclick='toggleMenu()'></div>
+    <aside class='menu-panel' id='menuPanel'>
+        <button class='close-menu' onclick='toggleMenu()'>&times;</button>
+        <h2>Instrucciones</h2>
+        <h3>Objetivo</h3>
+        <p>Ver unidades pendientes por entidad.</p>
+        <h3>Como usarlo</h3>
+        <ul>
+            <li>Haz clic en una entidad para abrir su tabla.</li>
+            <li>Usa los botones para ordenar por porcentaje.</li>
+        </ul>
+        <h3>Fecha de corte</h3>
+        <p>2026-07-21 08:08</p>
+    </aside>
+
+    <div class='container'>
+        <header class='header'>
+            <img src='https://imssbienestar.gob.mx/assets/img/imb_b.svg' alt='IMSS Bienestar'>
+            <h1>INFORME DE CLUES PENDIENTES POR ENTIDAD</h1>
+            <p>Actualizado: 2026-07-21 08:08</p>
+        </header>
+
+        <section class='estados-grid'>
+            
+            <button class='estado-btn' onclick='abrirEntidad("BAJA CALIFORNIA")'>
+                BAJA CALIFORNIA
+            </button>
+            
+            <button class='estado-btn' onclick='abrirEntidad("BAJA CALIFORNIA SUR")'>
+                BAJA CALIFORNIA SUR
+            </button>
+            
+            <button class='estado-btn' onclick='abrirEntidad("CAMPECHE")'>
+                CAMPECHE
+            </button>
+            
+            <button class='estado-btn' onclick='abrirEntidad("CHIAPAS")'>
+                CHIAPAS
+            </button>
+            
+            <button class='estado-btn' onclick='abrirEntidad("CIUDAD DE MEXICO")'>
+                CIUDAD DE MEXICO
+            </button>
+            
+            <button class='estado-btn' onclick='abrirEntidad("COLIMA")'>
+                COLIMA
+            </button>
+            
+            <button class='estado-btn' onclick='abrirEntidad("GUERRERO")'>
+                GUERRERO
+            </button>
+            
+            <button class='estado-btn' onclick='abrirEntidad("HIDALGO")'>
+                HIDALGO
+            </button>
+            
+            <button class='estado-btn' onclick='abrirEntidad("MEXICO")'>
+                MEXICO
+            </button>
+            
+            <button class='estado-btn' onclick='abrirEntidad("MICHOACAN DE OCAMPO")'>
+                MICHOACAN DE OCAMPO
+            </button>
+            
+            <button class='estado-btn' onclick='abrirEntidad("MORELOS")'>
+                MORELOS
+            </button>
+            
+            <button class='estado-btn' onclick='abrirEntidad("NAYARIT")'>
+                NAYARIT
+            </button>
+            
+            <button class='estado-btn' onclick='abrirEntidad("OAXACA")'>
+                OAXACA
+            </button>
+            
+            <button class='estado-btn' onclick='abrirEntidad("PUEBLA")'>
+                PUEBLA
+            </button>
+            
+            <button class='estado-btn' onclick='abrirEntidad("QUINTANA ROO")'>
+                QUINTANA ROO
+            </button>
+            
+            <button class='estado-btn' onclick='abrirEntidad("SAN LUIS POTOSI")'>
+                SAN LUIS POTOSI
+            </button>
+            
+            <button class='estado-btn' onclick='abrirEntidad("SINALOA")'>
+                SINALOA
+            </button>
+            
+            <button class='estado-btn' onclick='abrirEntidad("SONORA")'>
+                SONORA
+            </button>
+            
+            <button class='estado-btn' onclick='abrirEntidad("TABASCO")'>
+                TABASCO
+            </button>
+            
+            <button class='estado-btn' onclick='abrirEntidad("TAMAULIPAS")'>
+                TAMAULIPAS
+            </button>
+            
+            <button class='estado-btn' onclick='abrirEntidad("VERACRUZ DE IGNACIO DE LA LLAVE")'>
+                VERACRUZ DE IGNACIO DE LA LLAVE
+            </button>
+            
+            <button class='estado-btn' onclick='abrirEntidad("ZACATECAS")'>
+                ZACATECAS
+            </button>
+            
+        </section>
+
+        <p class='footer'>.</p>
+    </div>
+
+    <div class='modal' id='detalleModal'>
+        <div class='modal-content'>
+            <button class='close-btn' onclick='cerrarModal()'>&times;</button>
+            <h2 id='tituloEntidad'>Entidad</h2>
+            <p class='sub' id='subEntidad'></p>
+
+            <div class='sort-actions'>
+                <button class='sort-btn' onclick='ordenarPorPorcentajeDesc()'>Ordenar % mayor a menor</button>
+                <button class='sort-btn' onclick='ordenarPorPorcentajeAsc()'>Ordenar % menor a mayor</button>
+                <button class='sort-btn' onclick='ordenarPorClues()'>Ordenar por CLUES</button>
+            </div>
+
+            <div class='table-wrap'>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>CLUES</th>
+                            <th>Unidad</th>
+                            <th>Consultorios</th>
+                            <th>Respondidas</th>
+                            <th>Esperadas</th>
+                            <th>Avance</th>
+                        </tr>
+                    </thead>
+                    <tbody id='tbodyDetalle'></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src='data.js'></script>
+    <script>
+        const datosEntidades = (window.INFORME_DATA && window.INFORME_DATA.datos_entidades) || {};
+        let rowsActuales = [];
+
+        function toggleMenu() {
+            document.getElementById('menuPanel').classList.toggle('active');
+            document.getElementById('menuOverlay').classList.toggle('active');
+        }
+
+        function renderTabla() {
+            const tbody = document.getElementById('tbodyDetalle');
+            tbody.innerHTML = '';
+            rowsActuales.forEach(r => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${r.clues}</td>
+                    <td>${r.nombre_de_la_unidad}</td>
+                    <td>${r.consultorios}</td>
+                    <td>${r.respondidas}</td>
+                    <td>${r.esperadas}</td>
+                    <td>${Number(r.porcentaje).toFixed(1)}%</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function abrirEntidad(entidad) {
+            rowsActuales = [...(datosEntidades[entidad] || [])];
+            renderTabla();
+            document.getElementById('tituloEntidad').textContent = entidad;
+            document.getElementById('subEntidad').textContent = 'Detalle de unidades';
+            document.getElementById('detalleModal').classList.add('active');
+        }
+
+        function ordenarPorPorcentajeDesc() {
+            rowsActuales.sort((a, b) => b.porcentaje - a.porcentaje || a.clues.localeCompare(b.clues));
+            renderTabla();
+        }
+
+        function ordenarPorPorcentajeAsc() {
+            rowsActuales.sort((a, b) => a.porcentaje - b.porcentaje || a.clues.localeCompare(b.clues));
+            renderTabla();
+        }
+
+        function ordenarPorClues() {
+            rowsActuales.sort((a, b) => a.clues.localeCompare(b.clues));
+            renderTabla();
+        }
+
+        function cerrarModal() {
+            document.getElementById('detalleModal').classList.remove('active');
+        }
+
+        document.getElementById('detalleModal').addEventListener('click', function(e) {
+            if (e.target === this) cerrarModal();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                cerrarModal();
+                document.getElementById('menuPanel').classList.remove('active');
+                document.getElementById('menuOverlay').classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
