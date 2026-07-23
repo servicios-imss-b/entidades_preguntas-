@@ -5,12 +5,9 @@ base = pd.read_excel(fr"C:\Users\{usuario}\Downloads\nuevo-f\formulario-ang\base
 clues = pd.read_parquet(fr"C:\Users\{usuario}\IMSS-BIENESTAR\División de Procesamiento de información - Repositorio de Datos\CLUES\clues.parquet")
 import pandas as pd
 
-sheet_id = "1maRNGDuU9rEFWZLgMdhJS1waAnJxl6ENntm-nyD0tq8"
-gid = "1765182479"
 
-url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}"
 
-base_an = pd.read_csv(url)
+base_an = pd.read_csv(fr"C:\Users\jose.valdez\Downloads\nuevo-inf\informe--de-ang\base_an.csv")# hay que ver que siga esto en la ruta 
 col = ["clues_imb"]
 base = base[col]
 base = base.merge(
