@@ -5,9 +5,12 @@ base = pd.read_excel(fr"C:\Users\{usuario}\Downloads\nuevo-f\formulario-ang\base
 clues = pd.read_parquet(fr"C:\Users\{usuario}\IMSS-BIENESTAR\División de Procesamiento de información - Repositorio de Datos\CLUES\clues.parquet")
 import pandas as pd
 
+sheet_id = "1maRNGDuU9rEFWZLgMdhJS1waAnJxl6ENntm-nyD0tq8"
+gid = "1765182479"
 
+url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}"
 
-base_an = pd.read_csv(fr"C:\Users\jose.valdez\Downloads\nuevo-inf\informe--de-ang\base_an.csv")# hay que ver que siga esto en la ruta 
+base_an = pd.read_csv(url)
 col = ["clues_imb"]
 base = base[col]
 base = base.merge(
@@ -16,26 +19,21 @@ base = base.merge(
     how="left"
 )
 colum =['clues_imb', 'entidad','consultorio','pregunta','nombre_de_la_unidad', 'consultorios_habilitados']
-base_an = base_an[colum]    
+base_an = base_an[colum]
+
+# Regla de negocio: 0 consultorios habilitados implica 100% de avance.
+base_an["consultorios_habilitados_num"] = pd.to_numeric(base_an["consultorios_habilitados"], errors="coerce")
+clues_sin_consultorio = set(
+    base_an.loc[base_an["consultorios_habilitados_num"] == 0, "clues_imb"]
+    .dropna()
+    .astype(str)
+)
 b = pd.read_excel(fr"C:\Users\{usuario}\Downloads\nuevo-f\formulario-ang\bases\UM_IMB_SUS.xlsx",sheet_name="Hoja2")
 b = b.drop(index=[0, 2, 5,3,1])
 b = b.drop(columns=['Unnamed: 1'])
 b = b.rename(columns={
    'CLUES' : 'preguntas',
 })
-
-# Capturar ANTES de filtrar: solo desde la fila donde pregunta == "consultorios_habilitados"
-# y el valor real de la columna es exactamente 0 (no NaN, no valores de otras preguntas)
-mask_pregunta_ch = base_an["pregunta"].str.contains("consultorios_habilitados", case=False, na=False)
-clues_sin_consultorio = (
-    base_an.loc[
-        mask_pregunta_ch & (pd.to_numeric(base_an["consultorios_habilitados"], errors="coerce") == 0),
-        "clues_imb"
-    ]
-    .unique()
-)
-print(f"CLUES con consultorios_habilitados=0: {len(clues_sin_consultorio)} → {list(clues_sin_consultorio[:5])}")
-
 base_an = base_an[
     ~base_an["pregunta"].str.contains("internet|turno_consultorio|consultorios_habilitados", case=False, na=False)
 ]
@@ -118,10 +116,9 @@ tabla_unidades.loc[mask, "porcentaje"] = (
     * 100
 ).round(1)
 
-# Unidades con consultorios_habilitados == 0 → no tienen consultorio activo → 100%
-tabla_unidades.loc[
-    tabla_unidades["clues_imb"].isin(clues_sin_consultorio), "porcentaje"
-] = 100.0
+mask_sin_consultorio = tabla_unidades["clues_imb"].astype(str).isin(clues_sin_consultorio)
+tabla_unidades.loc[mask_sin_consultorio, ["consultorios", "respondidas", "esperadas"]] = 0
+tabla_unidades.loc[mask_sin_consultorio, "porcentaje"] = 100.0
 
 tabla_unidades = (
     tabla_unidades
