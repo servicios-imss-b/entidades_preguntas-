@@ -26,9 +26,10 @@ b = b.rename(columns={
 
 # Capturar ANTES de filtrar: clues donde consultorios_habilitados == 0 (exactamente, no NaN)
 clues_sin_consultorio = (
-    base_an.loc[base_an["consultorios_habilitados"] == 0, "clues_imb"]
+    base_an.loc[pd.to_numeric(base_an["consultorios_habilitados"], errors="coerce") == 0, "clues_imb"]
     .unique()
 )
+print(f"CLUES con consultorios_habilitados=0: {len(clues_sin_consultorio)} → {list(clues_sin_consultorio[:5])}")
 
 base_an = base_an[
     ~base_an["pregunta"].str.contains("internet|turno_consultorio|consultorios_habilitados", case=False, na=False)
