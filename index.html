@@ -30,9 +30,12 @@
         .header img { height: 50px; margin-bottom: 10px; }
         .header h1 { font-size: 28px; margin-bottom: 6px; }
 
-        .estados-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
+        .estados-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+        .estado-card { background: rgba(255,255,255,.75); border: 1px solid #e8e8e8; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
         .estado-btn { background: #235B4E; color: #fff; border: none; border-radius: 12px; padding: 14px 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: .3s; }
         .estado-btn:hover { background: #AE8640; transform: translateY(-2px); }
+        .descarga-btn { background: #fff; color: #235B4E; border: 1px solid #235B4E; border-radius: 10px; padding: 9px 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: .2s; }
+        .descarga-btn:hover { background: #f2faf8; }
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 2000; align-items: center; justify-content: center; }
         .modal.active { display: flex; }
@@ -73,105 +76,215 @@
             <li>Usa los botones para ordenar por porcentaje.</li>
         </ul>
         <h3>Fecha de corte</h3>
-        <p>2026-07-24 17:44</p>
+        <p>2026-07-24 17:51</p>
     </aside>
 
     <div class='container'>
         <header class='header'>
             <img src='https://imssbienestar.gob.mx/assets/img/imb_b.svg' alt='IMSS Bienestar'>
             <h1>INFORME DE CLUES PENDIENTES POR ENTIDAD</h1>
-            <p>Actualizado: 2026-07-24 17:44</p>
+            <p>Actualizado: 2026-07-24 17:51</p>
         </header>
 
         <section class='estados-grid'>
             
-            <button class='estado-btn' onclick='abrirEntidad("BAJA CALIFORNIA")'>
-                BAJA CALIFORNIA
-            </button>
+            <div class='estado-card'>
+                <button class='estado-btn' onclick='abrirEntidad("BAJA CALIFORNIA")'>
+                    BAJA CALIFORNIA
+                </button>
+                <button class='descarga-btn' onclick='descargarEntidad("BAJA CALIFORNIA")'>
+                    Descargar Excel
+                </button>
+            </div>
             
-            <button class='estado-btn' onclick='abrirEntidad("BAJA CALIFORNIA SUR")'>
-                BAJA CALIFORNIA SUR
-            </button>
+            <div class='estado-card'>
+                <button class='estado-btn' onclick='abrirEntidad("BAJA CALIFORNIA SUR")'>
+                    BAJA CALIFORNIA SUR
+                </button>
+                <button class='descarga-btn' onclick='descargarEntidad("BAJA CALIFORNIA SUR")'>
+                    Descargar Excel
+                </button>
+            </div>
             
-            <button class='estado-btn' onclick='abrirEntidad("CAMPECHE")'>
-                CAMPECHE
-            </button>
+            <div class='estado-card'>
+                <button class='estado-btn' onclick='abrirEntidad("CAMPECHE")'>
+                    CAMPECHE
+                </button>
+                <button class='descarga-btn' onclick='descargarEntidad("CAMPECHE")'>
+                    Descargar Excel
+                </button>
+            </div>
             
-            <button class='estado-btn' onclick='abrirEntidad("CHIAPAS")'>
-                CHIAPAS
-            </button>
+            <div class='estado-card'>
+                <button class='estado-btn' onclick='abrirEntidad("CHIAPAS")'>
+                    CHIAPAS
+                </button>
+                <button class='descarga-btn' onclick='descargarEntidad("CHIAPAS")'>
+                    Descargar Excel
+                </button>
+            </div>
             
-            <button class='estado-btn' onclick='abrirEntidad("CIUDAD DE MEXICO")'>
-                CIUDAD DE MEXICO
-            </button>
+            <div class='estado-card'>
+                <button class='estado-btn' onclick='abrirEntidad("CIUDAD DE MEXICO")'>
+                    CIUDAD DE MEXICO
+                </button>
+                <button class='descarga-btn' onclick='descargarEntidad("CIUDAD DE MEXICO")'>
+                    Descargar Excel
+                </button>
+            </div>
             
-            <button class='estado-btn' onclick='abrirEntidad("COLIMA")'>
-                COLIMA
-            </button>
+            <div class='estado-card'>
+                <button class='estado-btn' onclick='abrirEntidad("COLIMA")'>
+                    COLIMA
+                </button>
+                <button class='descarga-btn' onclick='descargarEntidad("COLIMA")'>
+                    Descargar Excel
+                </button>
+            </div>
             
-            <button class='estado-btn' onclick='abrirEntidad("GUERRERO")'>
-                GUERRERO
-            </button>
+            <div class='estado-card'>
+                <button class='estado-btn' onclick='abrirEntidad("GUERRERO")'>
+                    GUERRERO
+                </button>
+                <button class='descarga-btn' onclick='descargarEntidad("GUERRERO")'>
+                    Descargar Excel
+                </button>
+            </div>
             
-            <button class='estado-btn' onclick='abrirEntidad("HIDALGO")'>
-                HIDALGO
-            </button>
+            <div class='estado-card'>
+                <button class='estado-btn' onclick='abrirEntidad("HIDALGO")'>
+                    HIDALGO
+                </button>
+                <button class='descarga-btn' onclick='descargarEntidad("HIDALGO")'>
+                    Descargar Excel
+                </button>
+            </div>
             
-            <button class='estado-btn' onclick='abrirEntidad("MEXICO")'>
-                MEXICO
-            </button>
+            <div class='estado-card'>
+                <button class='estado-btn' onclick='abrirEntidad("MEXICO")'>
+                    MEXICO
+                </button>
+                <button class='descarga-btn' onclick='descargarEntidad("MEXICO")'>
+                    Descargar Excel
+                </button>
+            </div>
             
-            <button class='estado-btn' onclick='abrirEntidad("MICHOACAN DE OCAMPO")'>
-                MICHOACAN DE OCAMPO
-            </button>
+            <div class='estado-card'>
+                <button class='estado-btn' onclick='abrirEntidad("MICHOACAN DE OCAMPO")'>
+                    MICHOACAN DE OCAMPO
+                </button>
+                <button class='descarga-btn' onclick='descargarEntidad("MICHOACAN DE OCAMPO")'>
+                    Descargar Excel
+                </button>
+            </div>
             
-            <button class='estado-btn' onclick='abrirEntidad("MORELOS")'>
-                MORELOS
-            </button>
+            <div class='estado-card'>
+                <button class='estado-btn' onclick='abrirEntidad("MORELOS")'>
+                    MORELOS
+                </button>
+                <button class='descarga-btn' onclick='descargarEntidad("MORELOS")'>
+                    Descargar Excel
+                </button>
+            </div>
             
-            <button class='estado-btn' onclick='abrirEntidad("NAYARIT")'>
-                NAYARIT
-            </button>
+            <div class='estado-card'>
+                <button class='estado-btn' onclick='abrirEntidad("NAYARIT")'>
+                    NAYARIT
+                </button>
+                <button class='descarga-btn' onclick='descargarEntidad("NAYARIT")'>
+                    Descargar Excel
+                </button>
+            </div>
             
-            <button class='estado-btn' onclick='abrirEntidad("OAXACA")'>
-                OAXACA
-            </button>
+            <div class='estado-card'>
+                <button class='estado-btn' onclick='abrirEntidad("OAXACA")'>
+                    OAXACA
+                </button>
+                <button class='descarga-btn' onclick='descargarEntidad("OAXACA")'>
+                    Descargar Excel
+                </button>
+            </div>
             
-            <button class='estado-btn' onclick='abrirEntidad("PUEBLA")'>
-                PUEBLA
-            </button>
+            <div class='estado-card'>
+                <button class='estado-btn' onclick='abrirEntidad("PUEBLA")'>
+                    PUEBLA
+                </button>
+                <button class='descarga-btn' onclick='descargarEntidad("PUEBLA")'>
+                    Descargar Excel
+                </button>
+            </div>
             
-            <button class='estado-btn' onclick='abrirEntidad("QUINTANA ROO")'>
-                QUINTANA ROO
-            </button>
+            <div class='estado-card'>
+                <button class='estado-btn' onclick='abrirEntidad("QUINTANA ROO")'>
+                    QUINTANA ROO
+                </button>
+                <button class='descarga-btn' onclick='descargarEntidad("QUINTANA ROO")'>
+                    Descargar Excel
+                </button>
+            </div>
             
-            <button class='estado-btn' onclick='abrirEntidad("SAN LUIS POTOSI")'>
-                SAN LUIS POTOSI
-            </button>
+            <div class='estado-card'>
+                <button class='estado-btn' onclick='abrirEntidad("SAN LUIS POTOSI")'>
+                    SAN LUIS POTOSI
+                </button>
+                <button class='descarga-btn' onclick='descargarEntidad("SAN LUIS POTOSI")'>
+                    Descargar Excel
+                </button>
+            </div>
             
-            <button class='estado-btn' onclick='abrirEntidad("SINALOA")'>
-                SINALOA
-            </button>
+            <div class='estado-card'>
+                <button class='estado-btn' onclick='abrirEntidad("SINALOA")'>
+                    SINALOA
+                </button>
+                <button class='descarga-btn' onclick='descargarEntidad("SINALOA")'>
+                    Descargar Excel
+                </button>
+            </div>
             
-            <button class='estado-btn' onclick='abrirEntidad("SONORA")'>
-                SONORA
-            </button>
+            <div class='estado-card'>
+                <button class='estado-btn' onclick='abrirEntidad("SONORA")'>
+                    SONORA
+                </button>
+                <button class='descarga-btn' onclick='descargarEntidad("SONORA")'>
+                    Descargar Excel
+                </button>
+            </div>
             
-            <button class='estado-btn' onclick='abrirEntidad("TABASCO")'>
-                TABASCO
-            </button>
+            <div class='estado-card'>
+                <button class='estado-btn' onclick='abrirEntidad("TABASCO")'>
+                    TABASCO
+                </button>
+                <button class='descarga-btn' onclick='descargarEntidad("TABASCO")'>
+                    Descargar Excel
+                </button>
+            </div>
             
-            <button class='estado-btn' onclick='abrirEntidad("TAMAULIPAS")'>
-                TAMAULIPAS
-            </button>
+            <div class='estado-card'>
+                <button class='estado-btn' onclick='abrirEntidad("TAMAULIPAS")'>
+                    TAMAULIPAS
+                </button>
+                <button class='descarga-btn' onclick='descargarEntidad("TAMAULIPAS")'>
+                    Descargar Excel
+                </button>
+            </div>
             
-            <button class='estado-btn' onclick='abrirEntidad("VERACRUZ DE IGNACIO DE LA LLAVE")'>
-                VERACRUZ DE IGNACIO DE LA LLAVE
-            </button>
+            <div class='estado-card'>
+                <button class='estado-btn' onclick='abrirEntidad("VERACRUZ DE IGNACIO DE LA LLAVE")'>
+                    VERACRUZ DE IGNACIO DE LA LLAVE
+                </button>
+                <button class='descarga-btn' onclick='descargarEntidad("VERACRUZ DE IGNACIO DE LA LLAVE")'>
+                    Descargar Excel
+                </button>
+            </div>
             
-            <button class='estado-btn' onclick='abrirEntidad("ZACATECAS")'>
-                ZACATECAS
-            </button>
+            <div class='estado-card'>
+                <button class='estado-btn' onclick='abrirEntidad("ZACATECAS")'>
+                    ZACATECAS
+                </button>
+                <button class='descarga-btn' onclick='descargarEntidad("ZACATECAS")'>
+                    Descargar Excel
+                </button>
+            </div>
             
         </section>
 
@@ -211,6 +324,7 @@
     <script src='data.js'></script>
     <script>
         const datosEntidades = (window.INFORME_DATA && window.INFORME_DATA.datos_entidades) || {};
+        const archivosExcel = (window.INFORME_DATA && window.INFORME_DATA.archivos_excel) || {};
         let rowsActuales = [];
 
         function toggleMenu() {
@@ -240,6 +354,18 @@
             document.getElementById('tituloEntidad').textContent = entidad;
             document.getElementById('subEntidad').textContent = 'Detalle de unidades';
             document.getElementById('detalleModal').classList.add('active');
+        }
+
+        function descargarEntidad(entidad) {
+            const ruta = archivosExcel[entidad];
+            if (!ruta) return;
+
+            const link = document.createElement('a');
+            link.href = ruta;
+            link.download = ruta.split('/').pop();
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         function ordenarPorPorcentajeDesc() {
