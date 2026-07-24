@@ -15,7 +15,7 @@ base = base.merge(
     on="clues_imb",
     how="left"
 )
-colum =['clues_imb', 'entidad','consultorio','pregunta','nombre_de_la_unidad']
+colum =['clues_imb', 'entidad','consultorio','pregunta','nombre_de_la_unidad', 'consultorios_habilitados']
 base_an = base_an[colum]    
 b = pd.read_excel(fr"C:\Users\{usuario}\Downloads\nuevo-f\formulario-ang\bases\UM_IMB_SUS.xlsx",sheet_name="Hoja2")
 b = b.drop(index=[0, 2, 5,3,1])
@@ -23,6 +23,13 @@ b = b.drop(columns=['Unnamed: 1'])
 b = b.rename(columns={
    'CLUES' : 'preguntas',
 })
+
+# Capturar ANTES de filtrar: clues donde consultorios_habilitados == 0 (exactamente, no NaN)
+clues_sin_consultorio = (
+    base_an.loc[base_an["consultorios_habilitados"] == 0, "clues_imb"]
+    .unique()
+)
+
 base_an = base_an[
     ~base_an["pregunta"].str.contains("internet|turno_consultorio|consultorios_habilitados", case=False, na=False)
 ]
@@ -104,6 +111,11 @@ tabla_unidades.loc[mask, "porcentaje"] = (
     / tabla_unidades.loc[mask, "esperadas"]
     * 100
 ).round(1)
+
+# Unidades con consultorios_habilitados == 0 → no tienen consultorio activo → 100%
+tabla_unidades.loc[
+    tabla_unidades["clues_imb"].isin(clues_sin_consultorio), "porcentaje"
+] = 100.0
 
 tabla_unidades = (
     tabla_unidades
