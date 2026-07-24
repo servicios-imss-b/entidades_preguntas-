@@ -24,9 +24,14 @@ b = b.rename(columns={
    'CLUES' : 'preguntas',
 })
 
-# Capturar ANTES de filtrar: clues donde consultorios_habilitados == 0 (exactamente, no NaN)
+# Capturar ANTES de filtrar: solo desde la fila donde pregunta == "consultorios_habilitados"
+# y el valor real de la columna es exactamente 0 (no NaN, no valores de otras preguntas)
+mask_pregunta_ch = base_an["pregunta"].str.contains("consultorios_habilitados", case=False, na=False)
 clues_sin_consultorio = (
-    base_an.loc[pd.to_numeric(base_an["consultorios_habilitados"], errors="coerce") == 0, "clues_imb"]
+    base_an.loc[
+        mask_pregunta_ch & (pd.to_numeric(base_an["consultorios_habilitados"], errors="coerce") == 0),
+        "clues_imb"
+    ]
     .unique()
 )
 print(f"CLUES con consultorios_habilitados=0: {len(clues_sin_consultorio)} → {list(clues_sin_consultorio[:5])}")
