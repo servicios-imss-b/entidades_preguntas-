@@ -127,8 +127,6 @@ tabla_unidades = (
     .reset_index(drop=True)
 )
 import json
-import re
-import unicodedata
 from pathlib import Path
 from datetime import datetime
 
@@ -161,41 +159,8 @@ else:
 
     # Datos para JS por entidad (orden inicial: mayor a menor porcentaje)
     datos_entidades = {}
-    archivos_excel = {}
-    salida_dir = Path(__file__).resolve().parent
-    salida_excel = salida_dir / "excel_entidades"
-    salida_excel.mkdir(parents=True, exist_ok=True)
-
-    def nombre_seguro(nombre):
-        texto = unicodedata.normalize("NFKD", str(nombre))
-        texto = texto.encode("ascii", "ignore").decode("ascii")
-        texto = re.sub(r"[^A-Za-z0-9_-]+", "_", texto).strip("_")
-        return texto or "entidad"
-
     for entidad, sub in pendientes.groupby("entidad", sort=False):
         sub = sub.sort_values(["porcentaje", "clues"], ascending=[False, True])
-        nombre_archivo = f"pendientes_{nombre_seguro(entidad)}.xlsx"
-        ruta_excel = salida_excel / nombre_archivo
-        columnas_excel = [
-            "clues",
-            "nombre_de_la_unidad",
-            "consultorios",
-            "respondidas",
-            "esperadas",
-            "porcentaje",
-        ]
-        sub[columnas_excel].rename(
-            columns={
-                "clues": "CLUES",
-                "nombre_de_la_unidad": "Unidad",
-                "consultorios": "Consultorios",
-                "respondidas": "Respondidas",
-                "esperadas": "Esperadas",
-                "porcentaje": "Avance",
-            }
-        ).to_excel(ruta_excel, index=False)
-
-        archivos_excel[entidad] = f"excel_entidades/{nombre_archivo}"
         datos_entidades[entidad] = [
             {
                 "clues": str(r["clues"]),
@@ -213,21 +178,15 @@ else:
         entidad = r["entidad"]
         botones_entidad.append(
             f"""
-            <div class='estado-card'>
-                <button class='estado-btn' onclick='abrirEntidad("{entidad.replace("\"", "\\\"")}")'>
-                    {entidad}
-                </button>
-                <button class='descarga-btn' onclick='descargarEntidad("{entidad.replace("\"", "\\\"")}")'>
-                    Descargar Excel
-                </button>
-            </div>
+            <button class='estado-btn' onclick='abrirEntidad("{entidad.replace("\"", "\\\"")}")'>
+                {entidad}
+            </button>
             """
         )
 
     payload_js = {
         "fecha_reporte": fecha_reporte,
         "datos_entidades": datos_entidades,
-        "archivos_excel": archivos_excel,
     }
 
     html_content = f"""<!DOCTYPE html>
@@ -262,12 +221,9 @@ else:
         .header img {{ height: 50px; margin-bottom: 10px; }}
         .header h1 {{ font-size: 28px; margin-bottom: 6px; }}
 
-        .estados-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }}
-        .estado-card {{ background: rgba(255,255,255,.75); border: 1px solid #e8e8e8; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }}
+        .estados-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }}
         .estado-btn {{ background: {COLOR_FONDO}; color: #fff; border: none; border-radius: 12px; padding: 14px 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: .3s; }}
         .estado-btn:hover {{ background: {COLOR_SECUNDARIO}; transform: translateY(-2px); }}
-        .descarga-btn {{ background: #fff; color: {COLOR_FONDO}; border: 1px solid {COLOR_FONDO}; border-radius: 10px; padding: 9px 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: .2s; }}
-        .descarga-btn:hover {{ background: #f2faf8; }}
 
         .modal {{ display: none; position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 2000; align-items: center; justify-content: center; }}
         .modal.active {{ display: flex; }}
@@ -335,6 +291,7 @@ else:
                 <button class='sort-btn' onclick='ordenarPorPorcentajeDesc()'>Ordenar % mayor a menor</button>
                 <button class='sort-btn' onclick='ordenarPorPorcentajeAsc()'>Ordenar % menor a mayor</button>
                 <button class='sort-btn' onclick='ordenarPorClues()'>Ordenar por CLUES</button>
+                <button class='sort-btn' onclick='descargarExcelEntidad()'>Descargar Excel</button>
             </div>
 
             <div class='table-wrap'>
@@ -355,11 +312,12 @@ else:
         </div>
     </div>
 
+    <script src='https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js'></script>
     <script src='data.js'></script>
     <script>
         const datosEntidades = (window.INFORME_DATA && window.INFORME_DATA.datos_entidades) || {{}};
-        const archivosExcel = (window.INFORME_DATA && window.INFORME_DATA.archivos_excel) || {{}};
         let rowsActuales = [];
+        let entidadActual = '';
 
         function toggleMenu() {{
             document.getElementById('menuPanel').classList.toggle('active');
@@ -384,22 +342,38 @@ else:
 
         function abrirEntidad(entidad) {{
             rowsActuales = [...(datosEntidades[entidad] || [])];
+            entidadActual = entidad;
             renderTabla();
             document.getElementById('tituloEntidad').textContent = entidad;
             document.getElementById('subEntidad').textContent = 'Detalle de unidades';
             document.getElementById('detalleModal').classList.add('active');
         }}
 
-        function descargarEntidad(entidad) {{
-            const ruta = archivosExcel[entidad];
-            if (!ruta) return;
+        function descargarExcelEntidad() {{
+            if (!rowsActuales.length) {{
+                alert('No hay datos para descargar en esta entidad.');
+                return;
+            }}
 
-            const link = document.createElement('a');
-            link.href = ruta;
-            link.download = ruta.split('/').pop();
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            const filasExportar = rowsActuales.map(r => ({{
+                CLUES: r.clues,
+                UNIDAD: r.nombre_de_la_unidad,
+                CONSULTORIOS: r.consultorios,
+                RESPONDIDAS: r.respondidas,
+                ESPERADAS: r.esperadas,
+                AVANCE_PORCENTAJE: Number(r.porcentaje)
+            }}));
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(filasExportar);
+            XLSX.utils.book_append_sheet(wb, ws, 'Pendientes');
+
+            const nombreEntidad = (entidadActual || 'ENTIDAD')
+                .replace(/[^a-zA-Z0-9_-]+/g, '_')
+                .replace(/^_+|_+$/g, '');
+            const nombreArchivo = `pendientes_${{nombreEntidad || 'ENTIDAD'}}.xlsx`;
+
+            XLSX.writeFile(wb, nombreArchivo);
         }}
 
         function ordenarPorPorcentajeDesc() {{
